@@ -1,1 +1,71 @@
-Dobrý den
+/* 
+
+Vstup: Resime y´ = y, y(0) = 1, na (0, 1)
+- resime numericky -> Eulerovo schema
+- y_new(x + h) = y_old(x) + h * (1+h)
+
+výstup: CHYBA num. reseni v zavislosti na h
+- CHYBA = |y_(1) - y_exact(1)|
+- zavislost: CHYBA_h = f(h) 
+
+Co musime udelat:
+- musime menit h
+- pro kazde h vyresit rovnici
+- urcit chybu pro dane h
+- zapsat
+*/
+
+#include <iostream>
+#include <cmath>
+#include <fstream>
+  
+
+int main()
+{
+
+    double y_exact = exp(1.0); // presna hodnota y(1) = e^1
+
+    int number_of_h = 100; // pocet testovanych h
+    double log_h_start = -1.0; // log10 ( 10^-1 )
+    double log_h_end = -8.0; // log10 ( 10^-8 )
+    double log_h_step = (log_h_end - log_h_start) / (number_of_h - 1); // krok v logaritmickem mereni
+
+    //OTEVRI SOUBOR
+    std::ofstream my_file("data_presnost.txt");
+    bool is_my_file_really_open = my_file.is_open();
+
+    if( !is_my_file_really_open )
+    {
+        std::cerr << "data_presnost.txt is not open!" << std::endl;
+        exit( 1 );
+    }   
+    // cyklus pres hodnoty h
+    // N je pocet testovanych h 
+    for( int i = 0; i < number_of_h; i++ )
+    {
+        //OBSAH CYKLU   
+        // - urcit jake je skutecne h
+        double log_h = log_h_start + i * log_h_step;
+        double h = pow(10.0, log_h);
+        double h = std: :pow(10.0, log_h);
+
+        // vyresit rovnici y´ = y, y(0) = 1
+        // interval [0, 1) - rozsekat na N dilku
+        int N = ( 1.0 / h );
+        
+        double y_num = 1;
+        for( int j = 0; j < N; j++ )
+        {
+        y_num = y_num * (1 + h);
+        }
+
+        double error = std::fabs(y_num - y_exact);
+        //--ZAPSIS DO SOUBORU
+        my_file << h << " " << error << std::endl;
+
+    }
+    //ZAVRI SOUBOR
+    my_file.close();
+    std::cout << "data_presnost.txt is closed!" << std::endl;
+}
+
